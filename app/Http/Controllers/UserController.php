@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Validator;
+use DB;
 
 class UserController extends Controller
 {
@@ -42,7 +43,7 @@ class UserController extends Controller
         if($id){
             $user = User::find($id);
         }else{
-            $user = User::all();
+            $user = DB::table('users')->select('name','email')->paginate(5);
         }
 
         return $user;    
