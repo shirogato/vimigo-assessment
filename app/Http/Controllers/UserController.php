@@ -4,22 +4,36 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Validator;
 
 class UserController extends Controller
 {
     public function addUser(Request $request)
     {
-        $user = new User;
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password = $request->password;
 
-        $result = $user->save();
+        $rules = array(
+            'name' => 'required|min:5',
+            'email' => 'required|email',
+            'password' => 'required',
+        );
 
-        if($result){
-            return ["result" => "Data saved!"];
+        $validator = Validator::make($request->all(), $rules);
+
+        if($validator->fails()){
+            return $validator->errors();
         }else{
-            return ["result" => "Data not saved!"];
+            $user = new User;
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->password = $request->password;
+    
+            $result = $user->save();
+    
+            if($result){
+                return ["result" => "Data saved!"];
+            }else{
+                return ["result" => "Data not saved!"];
+            }   
         }
     }
 
