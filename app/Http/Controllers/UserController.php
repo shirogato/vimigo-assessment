@@ -3,12 +3,46 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Iluminate\Support\Facades\Auth;
 use App\Models\User;
 use Validator;
 use DB;
 
 class UserController extends Controller
 {
+
+    public function register(Request $request)
+    {
+        $rules = array(
+            'name' => 'required|min:5',
+            'email' => 'required|email',
+            'password' => 'required',
+        );
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if($validator->fails()){
+            return $validator->errors();
+        }else{
+            $user = new User;
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->password = $request->password;
+    
+            $result = $user->save();
+    
+            if($result){
+                return ["result" => "Data saved!"];
+            }else{
+                return ["result" => "Data not saved!"];
+            }   
+        }
+
+    }
+
+
+
+
     public function addUser(Request $request)
     {
 
@@ -45,7 +79,6 @@ class UserController extends Controller
         }else{
             $user = DB::table('users')->select('name','email')->paginate(5);
         }
-
         return $user;    
     }
 
